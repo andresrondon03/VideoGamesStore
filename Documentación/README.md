@@ -1,7 +1,8 @@
 # Documentación Técnica
 
-Repositorio de documentos fundamentales que sustentan la ingeniería y metodología del proyecto.
+Repositorio de los documentos maestros que sustentan el ciclo de vida del desarrollo.
 
 ## Archivos
-* **Proyecto_FIS.pdf**: Informe completo que incluye el levantamiento de 50 preguntas de requerimientos, definición de historias de usuario (HU-01 a HU-15), requerimientos Funcionales y No Funcionales, alcances y limitaciones.
-* **metodologías_agiles.pdf**: Análisis comparativo de los marcos de trabajo Scrum, Kanban y eXtreme Programming (XP) y su aplicación práctica en entornos de desarrollo.
+* **Proyecto_FIS.pdf**: Detalla el levantamiento de requerimientos funcionales (RF-01 a RF-17), historias de usuario y el alcance del Producto Mínimo Viable (MVP). 
+    * *Nota*: Las referencias a bases de datos relacionales en este documento inicial han sido adaptadas en la implementación hacia una arquitectura de almacenamiento en memoria para simplificar el prototipado.
+* **metodologías_agiles.pdf**: Análisis de Scrum, Kanban y XP, proporcionando la base metodológica para la gestión del equipo y la calidad del código.
