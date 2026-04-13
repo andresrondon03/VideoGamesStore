@@ -6,9 +6,9 @@ Este repositorio contiene el análisis, diseño estructural y documentación té
 El sistema es una plataforma interactiva que permite a los usuarios registrarse, explorar un catálogo de productos y simular transacciones de compra. Incluye un panel de administración para la gestión de inventario, stock y promociones.
 
 ## Gestión de Datos y Persistencia
-Para esta fase del proyecto, el sistema opera **completamente en memoria**. 
-* **Persistencia Temporal**: Los datos se gestionan mediante estructuras de datos internas (como colecciones de Java) durante el tiempo de ejecución.
-* **Simulación Lógica**: Esta arquitectura permite validar la lógica de negocio y los flujos de usuario sin depender de un motor de base de datos externo, facilitando un entorno de pruebas ágil y autocontenido.
+El sistema utiliza una Base de Datos Relacional para garantizar la persistencia de la información. 
+* **Persistencia de Datos**: Toda la información de usuarios, productos, pedidos y promociones se almacena de forma estructurada, permitiendo la recuperación de datos tras el reinicio de la aplicación.
+* **Integridad y Seguridad**: La implementación sigue el diseño lógico definido en el diagrama entidad-relación, asegurando la consistencia de los datos y el manejo seguro de credenciales mediante hashing.
 
 ## Características Principales
 * **Catálogo Interactivo**: Búsqueda por nombre y filtrado por precio, género o plataforma.
