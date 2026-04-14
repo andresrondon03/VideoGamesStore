@@ -9,6 +9,7 @@ import com.videogamesstore.api.entities.Rol;
 import com.videogamesstore.api.entities.Usuario;
 import com.videogamesstore.api.repositories.RolRepository;
 import com.videogamesstore.api.repositories.UsuarioRepository;
+import com.videogamesstore.api.security.JwtUtil;
 
 @Service
 public class AuthService {
@@ -16,6 +17,7 @@ public class AuthService {
     @Autowired private UsuarioRepository usuarioRepository;
     @Autowired private RolRepository rolRepository;
     @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired private JwtUtil jwtUtil; // <-- Inyectamos la utilidad de JWT
 
     // Método para el RF-01: Registro
     public Usuario registrar(RegistroRequest request) {
@@ -39,14 +41,15 @@ public class AuthService {
         return usuarioRepository.save(usuario);
     }
 
-    // Método para el RF-02: Inicio de sesión
+    // Método para el RF-02: Inicio de sesión actualizado para JWT
     public String iniciarSesion(String email, String rawPassword) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         // Comparamos la contraseña enviada con la encriptada en la BD
         if (passwordEncoder.matches(rawPassword, usuario.getPassword())) {
-            return "¡Login Exitoso! Bienvenido " + usuario.getNickname();
+            // Generamos el token inyectando el correo y el rol exacto de la base de datos
+            return jwtUtil.generarToken(usuario.getEmail(), usuario.getRol().getRol());
         } else {
             throw new RuntimeException("Contraseña incorrecta");
         }

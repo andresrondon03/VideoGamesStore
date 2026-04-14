@@ -19,7 +19,24 @@ public class VideojuegoService {
     }
 
     public Videojuego crearVideojuego(Videojuego videojuego) {
-        // Por ahora lo guardamos directo sin validaciones de plataforma
         return repository.save(videojuego);
+    }
+
+    public Videojuego actualizar(Integer id, Videojuego detalles) {
+        Videojuego vj = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Videojuego no encontrado"));
+        
+        vj.setTitulo(detalles.getTitulo());
+        vj.setDescripcion(detalles.getDescripcion());
+        vj.setPrecioBase(detalles.getPrecioBase());
+        vj.setStock(detalles.getStock());
+        vj.setCategorias(detalles.getCategorias());
+        vj.setPlataformas(detalles.getPlataformas());
+        
+        return repository.save(vj);
+    }
+
+    public void eliminar(Integer id) {
+        repository.deleteById(id);
     }
 }
