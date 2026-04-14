@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.videogamesstore.api.entities.Videojuego;
@@ -22,9 +23,15 @@ public class VideojuegoController {
     @Autowired
     private VideojuegoService service;
 
+    // Filtros dinámicos
     @GetMapping
-    public List<Videojuego> listarTodos() {
-        return service.obtenerTodos();
+    public List<Videojuego> listarCatálogo(
+            @RequestParam(required = false) String titulo,
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) String plataforma,
+            @RequestParam(required = false) Double precioMax) {
+        
+        return service.obtenerFiltrados(titulo, categoria, plataforma, precioMax);
     }
 
     @PostMapping

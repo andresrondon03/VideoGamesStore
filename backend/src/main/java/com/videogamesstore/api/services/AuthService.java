@@ -17,38 +17,31 @@ public class AuthService {
     @Autowired private UsuarioRepository usuarioRepository;
     @Autowired private RolRepository rolRepository;
     @Autowired private PasswordEncoder passwordEncoder;
-    @Autowired private JwtUtil jwtUtil; // <-- Inyectamos la utilidad de JWT
+    @Autowired private JwtUtil jwtUtil;
 
-    // Método para el RF-01: Registro
     public Usuario registrar(RegistroRequest request) {
-        // Validar si el correo ya existe
         if(usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("El correo ya está en uso");
         }
 
-        // Obtener el rol CLIENTE (id 2) que insertamos en pgAdmin
-        Rol rolCliente = rolRepository.findById(2)
-                .orElseThrow(() -> new RuntimeException("Error: Rol base no configurado en la BD"));
+        // Corrección: Búsqueda segura por nombre de rol
+        Rol rolCliente = rolRepository.findByRol("CLIENTE")
+                .orElseThrow(() -> new RuntimeException("Error: Rol 'CLIENTE' no configurado en la BD"));
 
         Usuario usuario = new Usuario();
         usuario.setNickname(request.getNickname());
         usuario.setEmail(request.getEmail());
-        
-        // Encriptar contraseña con BCrypt antes de guardar
         usuario.setPassword(passwordEncoder.encode(request.getPassword()));
         usuario.setRol(rolCliente);
 
         return usuarioRepository.save(usuario);
     }
 
-    // Método para el RF-02: Inicio de sesión actualizado para JWT
     public String iniciarSesion(String email, String rawPassword) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Comparamos la contraseña enviada con la encriptada en la BD
         if (passwordEncoder.matches(rawPassword, usuario.getPassword())) {
-            // Generamos el token inyectando el correo y el rol exacto de la base de datos
             return jwtUtil.generarToken(usuario.getEmail(), usuario.getRol().getRol());
         } else {
             throw new RuntimeException("Contraseña incorrecta");

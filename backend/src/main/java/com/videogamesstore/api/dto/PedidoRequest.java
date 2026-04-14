@@ -6,8 +6,7 @@ import lombok.Data;
 
 @Data
 public class PedidoRequest {
-    // Recibimos el email temporalmente para identificar al usuario
-    private String emailUsuario; 
-    // Lista de IDs de los videojuegos que están en el carrito
-    private List<Integer> idVideojuegos; 
+    // El email se extraerá del token JWT por seguridad.
+    // Lista de ítems con sus respectivas cantidades
+    private List<ItemCarritoDTO> items; 
 }

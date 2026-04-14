@@ -1,15 +1,20 @@
 package com.videogamesstore.api.services;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.videogamesstore.api.dto.ItemCarritoDTO;
 import com.videogamesstore.api.dto.PedidoRequest;
+import com.videogamesstore.api.entities.DetallePedido;
 import com.videogamesstore.api.entities.Pedido;
 import com.videogamesstore.api.entities.Usuario;
 import com.videogamesstore.api.entities.Videojuego;
 import com.videogamesstore.api.repositories.PedidoRepository;
 import com.videogamesstore.api.repositories.UsuarioRepository;
 import com.videogamesstore.api.repositories.VideojuegoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PedidoService {
@@ -19,37 +24,56 @@ public class PedidoService {
     @Autowired private UsuarioRepository usuarioRepository;
 
     @Transactional
-    public Pedido procesarCheckout(PedidoRequest request) {
-        // 1. Buscar al usuario
-        Usuario usuario = usuarioRepository.findByEmail(request.getEmailUsuario())
+    public Pedido procesarCheckout(String emailUsuario, PedidoRequest request) {
+        Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if(request.getItems() == null || request.getItems().isEmpty()) {
+            throw new RuntimeException("El carrito está vacío");
+        }
+
+        Pedido pedido = new Pedido();
+        pedido.setUsuario(usuario);
+        pedido.setEstado("Completado");
 
         double total = 0.0;
 
-        // 2. Procesar cada videojuego del carrito
-        for (Integer idJuego : request.getIdVideojuegos()) {
-            Videojuego vj = videojuegoRepository.findById(idJuego)
-                    .orElseThrow(() -> new RuntimeException("Juego no encontrado con ID: " + idJuego));
+        for (ItemCarritoDTO item : request.getItems()) {
+            Videojuego vj = videojuegoRepository.findById(item.getIdVideojuego())
+                    .orElseThrow(() -> new RuntimeException("Juego no encontrado: " + item.getIdVideojuego()));
 
-            // Regla de Negocio: Validar Stock
-            if (vj.getStock() <= 0) {
-                throw new RuntimeException("Sin stock disponible para: " + vj.getTitulo());
+            if (vj.getStock() < item.getCantidad()) {
+                throw new RuntimeException("Stock insuficiente para: " + vj.getTitulo() + " (Disponibles: " + vj.getStock() + ")");
             }
 
-            // Reducir el inventario
-            vj.setStock(vj.getStock() - 1);
+            // Reducir stock
+            vj.setStock(vj.getStock() - item.getCantidad());
             videojuegoRepository.save(vj);
 
-            // Sumar al total
-            total += vj.getPrecioBase();
+            // Crear el detalle del pedido
+            DetallePedido detalle = new DetallePedido();
+            detalle.setPedido(pedido);
+            detalle.setVideojuego(vj);
+            detalle.setCantidad(item.getCantidad());
+            detalle.setPrecioUnitario(vj.getPrecioBase());
+            
+            pedido.getDetalles().add(detalle);
+
+            // Calcular subtotal
+            total += (vj.getPrecioBase() * item.getCantidad());
         }
 
-        // 3. Crear y guardar el registro del pedido
-        Pedido pedido = new Pedido();
-        pedido.setUsuario(usuario);
         pedido.setTotal(total);
-        pedido.setEstado("Completado"); // Simulación de pago exitoso
+        return pedidoRepository.save(pedido); // Gracias a CascadeType.ALL se guardan los detalles automáticamente
+    }
 
-        return pedidoRepository.save(pedido);
+    // RF-17: Historial para el cliente
+    public List<Pedido> obtenerHistorialPorEmail(String email) {
+        return pedidoRepository.findByUsuarioEmail(email);
+    }
+
+    // RF-17: Historial completo para el admin
+    public List<Pedido> obtenerTodosLosPedidos() {
+        return pedidoRepository.findAll();
     }
 }

@@ -57,20 +57,22 @@ class ApiApplicationTests {
 
     @Test
     void test04_ObtenerCatalogo() {
-        List<Videojuego> catalogo = videojuegoService.obtenerTodos();
+        // Método dinámico enviando nulls
+        List<Videojuego> catalogo = videojuegoService.obtenerFiltrados(null, null, null, null);
         assertNotNull(catalogo);
     }
 
     @Test
     void test05_RendimientoServicioVideojuegos() {
-        assertTimeout(Duration.ofMillis(500), () -> videojuegoService.obtenerTodos());
+        // Método dinámico
+        assertTimeout(Duration.ofMillis(500), () -> videojuegoService.obtenerFiltrados(null, null, null, null));
     }
 
     @Test
     void test06_RendimientoFiltradoPorCategoria() {
-        // Prueba de rendimiento específica para el filtrado del RF-06
+        // Método de filtrado completo del servicio
         assertTimeout(Duration.ofMillis(300), () -> {
-            videojuegoRepository.findByCategoriasNombreIgnoreCase("RPG");
+            videojuegoService.obtenerFiltrados(null, "RPG", null, null);
         });
     }
 }
