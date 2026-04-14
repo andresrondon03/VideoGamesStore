@@ -6,13 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.videogamesstore.api.entities.Videojuego;
 
-public interface VideojuegoRepository extends JpaRepository<Videojuego, Long> {
-    // Filtro por plataforma
-    List<Videojuego> findByPlataformaIgnoreCase(String plataforma);
+public interface VideojuegoRepository extends JpaRepository<Videojuego, Integer> {
     
-    // Filtro por precio máximo
+    List<Videojuego> findByTituloContainingIgnoreCase(String titulo);
+
     List<Videojuego> findByPrecioBaseLessThanEqual(Double precio);
     
-    // Filtro por nombre (Buscador RF-05)
-    List<Videojuego> findByTituloContainingIgnoreCase(String titulo);
+    List<Videojuego> findByPlataformasNombreIgnoreCase(String nombrePlataforma);
+
+    List<Videojuego> findByCategoriasNombreIgnoreCase(String nombreCategoria);
 }

@@ -9,14 +9,14 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "categorias")
+@Table(name = "plataformas")
 @Data
-public class Categoria {
+public class Plataforma {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_cat")
+    @Column(name = "id_plat")
     private Integer id;
 
-    @Column(length = 15, nullable = false)
+    @Column(name = "nombre", length = 15, nullable = false) // Mantengo el nombre del SQL
     private String nombre;
 }

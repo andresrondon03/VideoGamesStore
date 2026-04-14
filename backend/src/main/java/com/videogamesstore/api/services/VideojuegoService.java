@@ -19,7 +19,7 @@ public class VideojuegoService {
     }
 
     public Videojuego crearVideojuego(Videojuego videojuego) {
-        // Aquí podrías agregar validaciones, ej: if(videojuego.getPrecioBase() < 0) throw error;
+        // Por ahora lo guardamos directo sin validaciones de plataforma
         return repository.save(videojuego);
     }
 }
