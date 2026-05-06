@@ -1,0 +1,90 @@
+---
+import { getCollection } from "astro:content";
+import GameCard from "../components/GameCard.astro";
+import HeroSection from "../components/HeroSection.astro";
+import Navbar from "../components/Navbar.astro";
+import Layout from "../layouts/Layout.astro";
+import { api } from "../lib/api";
+import type { Videojuego } from "../lib/types";
+
+let homeEntry: Awaited<ReturnType<typeof getCollection>>[number] | undefined;
+let valueProps: Awaited<ReturnType<typeof getCollection>>[number] | undefined;
+
+try {
+  [homeEntry] = await getCollection("home");
+} catch {
+  homeEntry = undefined;
+}
+
+try {
+  [valueProps] = await getCollection("marketing");
+} catch {
+  valueProps = undefined;
+}
+
+let juegosDestacados: Videojuego[] = [];
+let catalogoError = "";
+
+try {
+  const catalogo = await api.videojuegos.listar();
+  juegosDestacados = catalogo.slice(0, 6);
+} catch (error) {
+  catalogoError = error instanceof Error ? error.message : "No se pudo cargar el catalogo.";
+}
+---
+
+<Layout title="TechZone Gaming | Landing" description="Landing de VideoGamesStore con ofertas y acceso al catalogo gamer.">
+  <Navbar currentPath={Astro.url.pathname} />
+  {
+    homeEntry && (
+      <HeroSection
+        title={homeEntry.data.title}
+        subtitle={homeEntry.data.subtitle}
+        ctaLabel={homeEntry.data.ctaLabel}
+        ctaHref={homeEntry.data.ctaHref}
+      />
+    )
+  }
+
+  <main class="mx-auto w-full max-w-6xl px-4 py-12">
+    <section class="mb-12">
+      <p class="mb-2 text-sm font-medium text-slate-600">Categorias:</p>
+      <div class="flex flex-wrap gap-3">
+        {(homeEntry?.data.featuredCategories ?? []).map((item) => (
+          <span class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700">
+            {item}
+          </span>
+        ))}
+      </div>
+    </section>
+
+    <section>
+      <div class="mb-6 flex items-end justify-between">
+        <div>
+          <h2 class="text-3xl font-bold text-slate-900">Ofertas Especiales</h2>
+          <p class="text-slate-500">Datos conectados al backend Spring Boot.</p>
+        </div>
+        <a href="/catalogo" class="text-sm font-semibold text-fuchsia-600 hover:text-fuchsia-500">Ver todo</a>
+      </div>
+
+      {
+        catalogoError ? (
+          <p class="rounded-lg border border-rose-200 bg-rose-50 p-4 text-rose-700">{catalogoError}</p>
+        ) : (
+          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {juegosDestacados.map((game) => <GameCard game={game} />)}
+          </div>
+        )
+      }
+    </section>
+
+    {
+      valueProps && (
+        <section class="mt-12 rounded-xl border border-violet-200 bg-violet-50 p-6">
+          <h3 class="mb-2 text-xl font-semibold text-violet-800">{valueProps.data.title}</h3>
+          <p class="text-slate-700">{valueProps.data.description}</p>
+        </section>
+      )
+    }
+  </main>
+</Layout>

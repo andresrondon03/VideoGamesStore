@@ -1,0 +1,61 @@
+---
+import Navbar from "../components/Navbar.astro";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Historial | TechZone Gaming" description="Consulta tu historial de pedidos como cliente autenticado.">
+  <Navbar currentPath={Astro.url.pathname} />
+  <main class="mx-auto w-full max-w-4xl px-4 py-12">
+    <h1 class="mb-6 text-3xl font-bold text-slate-900">Historial de pedidos</h1>
+    <p class="mb-4 text-slate-600">Esta vista consume <code>/api/pedidos/historial</code> usando JWT.</p>
+    <div id="history-list" class="space-y-4"></div>
+    <p id="message" class="mt-4 text-sm"></p>
+  </main>
+</Layout>
+
+<script>
+  import { api } from "../lib/api";
+  import { getToken } from "../lib/client-store";
+
+  const container = document.querySelector("#history-list");
+  const message = document.querySelector("#message");
+
+  async function loadHistory() {
+    const token = getToken();
+    if (!token) {
+      if (message) {
+        message.textContent = "Inicia sesion para ver tu historial.";
+        message.className = "mt-4 text-sm text-rose-600";
+      }
+      return;
+    }
+
+    try {
+      const pedidos = await api.pedidos.historial(token);
+      if (!container) return;
+      if (pedidos.length === 0) {
+        container.innerHTML = "<p class='rounded border border-slate-200 bg-white p-4 text-slate-600'>Aun no tienes pedidos.</p>";
+        return;
+      }
+
+      container.innerHTML = pedidos
+        .map(
+          (pedido) => `
+            <article class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p class="font-semibold text-fuchsia-700">Pedido #${pedido.id}</p>
+              <p class="text-sm text-slate-700">Estado: ${pedido.estado} | Total: $${pedido.total.toFixed(2)}</p>
+              <p class="text-xs text-slate-500">Fecha: ${pedido.fechaCompra ?? "No disponible"}</p>
+            </article>
+          `,
+        )
+        .join("");
+    } catch (error) {
+      if (message) {
+        message.textContent = error instanceof Error ? error.message : "No se pudo cargar el historial.";
+        message.className = "mt-4 text-sm text-rose-600";
+      }
+    }
+  }
+
+  loadHistory();
+</script>

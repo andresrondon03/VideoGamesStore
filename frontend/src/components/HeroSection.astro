@@ -1,0 +1,33 @@
+---
+interface Props {
+  title: string;
+  subtitle: string;
+  ctaLabel: string;
+  ctaHref: string;
+}
+
+const { title, subtitle, ctaLabel, ctaHref } = Astro.props;
+---
+
+<section class="relative overflow-hidden border-b border-fuchsia-600/30 bg-linear-to-r from-violet-800 via-purple-700 to-fuchsia-600">
+  <div class="mx-auto max-w-6xl px-4 py-16 text-white">
+    <p class="mb-3 text-center text-sm font-medium uppercase tracking-[0.18em] text-fuchsia-100">Tu tienda gaming definitiva</p>
+    <h1 class="mb-4 text-center text-4xl font-black leading-tight md:text-6xl">{title}</h1>
+    <p class="mx-auto mb-8 max-w-2xl text-center text-fuchsia-100">{subtitle}</p>
+    <div class="mx-auto mb-8 flex max-w-2xl flex-col gap-3 rounded-xl bg-white/10 p-3 backdrop-blur md:flex-row">
+      <input
+        type="text"
+        placeholder="Buscar productos..."
+        class="w-full rounded-md border border-white/20 bg-white px-4 py-2 text-sm text-slate-700 outline-none"
+      />
+      <a href={ctaHref} class="rounded-md bg-fuchsia-600 px-5 py-2 text-center text-sm font-semibold text-white hover:bg-fuchsia-500">
+        {ctaLabel}
+      </a>
+    </div>
+    <div class="mx-auto grid max-w-4xl gap-3 text-sm md:grid-cols-3">
+      <div class="rounded-lg border border-white/20 bg-slate-900/35 px-4 py-3">RPG Collection - Hasta 40% OFF</div>
+      <div class="rounded-lg border border-white/20 bg-slate-900/35 px-4 py-3">Accesorios gamer con envio gratis</div>
+      <div class="rounded-lg border border-white/20 bg-slate-900/35 px-4 py-3">Nuevos lanzamientos en preventa</div>
+    </div>
+  </div>
+</section>

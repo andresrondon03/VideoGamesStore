@@ -1,0 +1,107 @@
+---
+import Navbar from "../components/Navbar.astro";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Checkout | TechZone Gaming" description="Finaliza tu compra enviando los productos del carrito al backend.">
+  <Navbar currentPath={Astro.url.pathname} />
+  <main class="mx-auto w-full max-w-3xl px-4 py-12">
+    <h1 class="mb-6 text-3xl font-bold text-slate-900">Checkout</h1>
+
+    <section class="mb-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h2 class="mb-4 text-xl font-semibold text-slate-900">Carrito actual</h2>
+      <ul id="cart-list" class="space-y-2 text-sm text-slate-700"></ul>
+      <p id="cart-total" class="mt-4 font-semibold text-fuchsia-700"></p>
+    </section>
+
+    <div class="flex gap-3">
+      <button id="checkout-btn" class="rounded-md bg-fuchsia-600 px-4 py-2 font-semibold text-white hover:bg-fuchsia-500">Confirmar compra</button>
+      <button id="clear-btn" class="rounded-md border border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700 hover:border-rose-400">Vaciar carrito</button>
+    </div>
+    <p id="message" class="mt-4 text-sm"></p>
+  </main>
+</Layout>
+
+<script>
+  import { api } from "../lib/api";
+  import { clearCart, getCart, getToken } from "../lib/client-store";
+
+  const cartList = document.querySelector("#cart-list");
+  const cartTotal = document.querySelector("#cart-total");
+  const message = document.querySelector("#message");
+  const checkoutBtn = document.querySelector("#checkout-btn");
+  const clearBtn = document.querySelector("#clear-btn");
+
+  async function renderCart() {
+    const cart = getCart();
+    if (!cartList || !cartTotal) return;
+    if (cart.length === 0) {
+      cartList.innerHTML = "<li>El carrito esta vacio.</li>";
+      cartTotal.textContent = "";
+      return;
+    }
+
+    const catalogo = await api.videojuegos.listar();
+    let total = 0;
+    cartList.innerHTML = cart
+      .map((item) => {
+        const game = catalogo.find((x) => x.id === item.idVideojuego);
+        const subtotal = (game?.precioBase ?? 0) * item.cantidad;
+        total += subtotal;
+        return `<li class="rounded border border-slate-200 bg-slate-50 p-3">${game?.titulo ?? "Producto"} x${item.cantidad} - $${subtotal.toFixed(2)}</li>`;
+      })
+      .join("");
+
+    cartTotal.textContent = `Total estimado: $${total.toFixed(2)}`;
+  }
+
+  checkoutBtn?.addEventListener("click", async () => {
+    const token = getToken();
+    const items = getCart();
+    if (!token) {
+      if (message) {
+        message.textContent = "Debes iniciar sesion para completar el checkout.";
+        message.className = "mt-4 text-sm text-rose-600";
+      }
+      return;
+    }
+    if (items.length === 0) {
+      if (message) {
+        message.textContent = "No hay items en el carrito.";
+        message.className = "mt-4 text-sm text-rose-600";
+      }
+      return;
+    }
+
+    try {
+      const pedido = await api.pedidos.checkout(token, { items });
+      clearCart();
+      await renderCart();
+      if (message) {
+        message.textContent = `Compra realizada. Pedido #${pedido.id}`;
+        message.className = "mt-4 text-sm text-emerald-600";
+      }
+    } catch (error) {
+      if (message) {
+        message.textContent = error instanceof Error ? error.message : "Error al procesar compra.";
+        message.className = "mt-4 text-sm text-rose-600";
+      }
+    }
+  });
+
+  clearBtn?.addEventListener("click", async () => {
+    clearCart();
+    await renderCart();
+    if (message) {
+      message.textContent = "Carrito vaciado.";
+      message.className = "mt-4 text-sm text-fuchsia-700";
+    }
+  });
+
+  renderCart().catch((error) => {
+    if (message) {
+      message.textContent = error instanceof Error ? error.message : "No se pudo cargar el checkout.";
+      message.className = "mt-4 text-sm text-rose-600";
+    }
+  });
+</script>

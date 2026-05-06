@@ -1,0 +1,49 @@
+---
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = "/" } = Astro.props;
+
+const links = [
+  { href: "/", label: "Inicio" },
+  { href: "/catalogo", label: "Catalogo" },
+  { href: "/checkout", label: "Checkout" },
+  { href: "/historial", label: "Historial" },
+  { href: "/admin", label: "Admin" },
+];
+---
+
+<header class="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/95 backdrop-blur">
+  <nav class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4">
+    <a href="/" class="flex items-center gap-2 text-base font-bold text-white">
+      <span class="text-fuchsia-400">🎮</span>
+      TechZone Gaming
+    </a>
+    <ul class="hidden gap-5 text-sm text-slate-300 md:flex">
+      {
+        links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class:list={[
+                "transition hover:text-fuchsia-300",
+                currentPath === link.href && "text-fuchsia-400",
+              ]}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="flex gap-3">
+      <a href="/login" class="rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200 hover:border-fuchsia-400">
+        Iniciar sesion
+      </a>
+      <a href="/registro" class="rounded-md bg-fuchsia-600 px-3 py-2 text-sm font-semibold text-white hover:bg-fuchsia-500">
+        Registrarse
+      </a>
+    </div>
+  </nav>
+</header>

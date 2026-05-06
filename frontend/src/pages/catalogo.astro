@@ -1,0 +1,152 @@
+---
+import GameCard from "../components/GameCard.astro";
+import Navbar from "../components/Navbar.astro";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Catalogo | TechZone Gaming" description="Explora el catalogo con filtros por titulo, categoria, plataforma y precio.">
+  <Navbar currentPath={Astro.url.pathname} />
+  <main class="mx-auto w-full max-w-6xl px-4 py-10">
+    <h1 class="mb-6 text-3xl font-bold text-slate-900">Catalogo y filtros</h1>
+
+    <form method="GET" class="mb-8 grid gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-4">
+      <input id="filtro-titulo" name="titulo" placeholder="Buscar por titulo" class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-fuchsia-500" />
+      <input id="filtro-categoria" name="categoria" placeholder="Categoria" class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-fuchsia-500" />
+      <input id="filtro-plataforma" name="plataforma" placeholder="Plataforma" class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-fuchsia-500" />
+      <input id="filtro-precio" type="number" min="0" step="0.01" name="precioMax" placeholder="Precio maximo" class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-fuchsia-500" />
+      <button type="submit" class="rounded-md bg-fuchsia-600 px-4 py-2 text-sm font-semibold text-white hover:bg-fuchsia-500 md:col-span-4">Aplicar filtros</button>
+    </form>
+
+    <div id="catalogo-error" class="hidden rounded-lg border border-rose-200 bg-rose-50 p-4 text-rose-700"></div>
+    <div id="catalogo-empty" class="hidden rounded-lg border border-slate-200 bg-white p-4 text-slate-600">No hay videojuegos para esos filtros.</div>
+    <div id="catalogo-grid" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"></div>
+
+    <p id="cart-feedback" class="mt-6 text-sm text-fuchsia-700"></p>
+  </main>
+</Layout>
+
+<script>
+  import { api } from "../lib/api";
+  import { addToCart } from "../lib/client-store";
+  import type { Videojuego } from "../lib/types";
+
+  const form = document.querySelector<HTMLFormElement>("form[method='GET']");
+  const grid = document.querySelector<HTMLDivElement>("#catalogo-grid");
+  const errorBox = document.querySelector<HTMLDivElement>("#catalogo-error");
+  const emptyBox = document.querySelector<HTMLDivElement>("#catalogo-empty");
+  const feedback = document.querySelector<HTMLParagraphElement>("#cart-feedback");
+  const tituloInput = document.querySelector<HTMLInputElement>("#filtro-titulo");
+  const categoriaInput = document.querySelector<HTMLInputElement>("#filtro-categoria");
+  const plataformaInput = document.querySelector<HTMLInputElement>("#filtro-plataforma");
+  const precioInput = document.querySelector<HTMLInputElement>("#filtro-precio");
+
+  function paramsFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      titulo: params.get("titulo") ?? "",
+      categoria: params.get("categoria") ?? "",
+      plataforma: params.get("plataforma") ?? "",
+      precioMax: params.get("precioMax") ?? "",
+    };
+  }
+
+  function paintFilters() {
+    const current = paramsFromUrl();
+    if (tituloInput) tituloInput.value = current.titulo;
+    if (categoriaInput) categoriaInput.value = current.categoria;
+    if (plataformaInput) plataformaInput.value = current.plataforma;
+    if (precioInput) precioInput.value = current.precioMax;
+  }
+
+  function renderCards(juegos: Videojuego[]) {
+    if (!grid) return;
+    grid.innerHTML = juegos
+      .map(
+        (game) => `
+        <article class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div class="mb-3 flex items-start justify-between gap-3">
+            <h3 class="text-lg font-semibold text-fuchsia-700">${game.titulo}</h3>
+            <span class="rounded bg-fuchsia-100 px-2 py-1 text-xs font-medium text-fuchsia-700">$${game.precioBase.toFixed(2)}</span>
+          </div>
+          <p class="mb-3 text-sm text-slate-600">${game.descripcion || "Sin descripcion disponible."}</p>
+          <div class="mb-3 flex flex-wrap gap-2">
+            ${(game.categorias ?? []).map((categoria) => `<span class="rounded bg-slate-100 px-2 py-1 text-xs">${categoria.nombre}</span>`).join("")}
+          </div>
+          <div class="mb-4 flex flex-wrap gap-2">
+            ${(game.plataformas ?? []).map((plataforma) => `<span class="rounded bg-indigo-100 px-2 py-1 text-xs text-indigo-700">${plataforma.nombre}</span>`).join("")}
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="${game.stock > 0 ? "text-emerald-600" : "text-rose-600"}">
+              ${game.stock > 0 ? `Stock: ${game.stock}` : "Agotado"}
+            </span>
+            <button
+              class="rounded-md bg-fuchsia-600 px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-400"
+              ${game.stock <= 0 ? "disabled" : ""}
+              data-add-to-cart="${game.id}"
+            >
+              Agregar
+            </button>
+          </div>
+        </article>
+      `,
+      )
+      .join("");
+
+    const buttons = grid.querySelectorAll<HTMLButtonElement>("[data-add-to-cart]");
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const gameId = Number(button.getAttribute("data-add-to-cart"));
+        if (!Number.isNaN(gameId)) {
+          addToCart(gameId);
+          if (feedback) feedback.textContent = "Producto agregado al carrito.";
+        }
+      });
+    });
+  }
+
+  async function loadCatalog() {
+    if (!errorBox || !emptyBox || !grid) return;
+    const current = paramsFromUrl();
+    errorBox.classList.add("hidden");
+    emptyBox.classList.add("hidden");
+    grid.innerHTML = "";
+
+    try {
+      const filters = {
+        titulo: current.titulo || undefined,
+        categoria: current.categoria || undefined,
+        plataforma: current.plataforma || undefined,
+        precioMax: current.precioMax ? Number(current.precioMax) : undefined,
+      };
+      const juegos = await api.videojuegos.listar(filters);
+      if (juegos.length === 0) {
+        emptyBox.classList.remove("hidden");
+        return;
+      }
+      renderCards(juegos);
+    } catch (error) {
+      errorBox.textContent = error instanceof Error ? error.message : "No se pudo cargar el catalogo.";
+      errorBox.classList.remove("hidden");
+    }
+  }
+
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!form) return;
+    const data = new FormData(form);
+    const params = new URLSearchParams();
+    const titulo = String(data.get("titulo") ?? "").trim();
+    const categoria = String(data.get("categoria") ?? "").trim();
+    const plataforma = String(data.get("plataforma") ?? "").trim();
+    const precioMax = String(data.get("precioMax") ?? "").trim();
+    if (titulo) params.set("titulo", titulo);
+    if (categoria) params.set("categoria", categoria);
+    if (plataforma) params.set("plataforma", plataforma);
+    if (precioMax) params.set("precioMax", precioMax);
+    history.replaceState({}, "", `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`);
+    loadCatalog();
+  });
+
+  paintFilters();
+  loadCatalog();
+</script>
