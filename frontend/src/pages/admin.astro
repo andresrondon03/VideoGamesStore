@@ -51,16 +51,16 @@ import Layout from "../layouts/Layout.astro";
             <input id="stock" type="number" min="0" required class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500" />
           </div>
           <div>
-            <label for="categoria" class="mb-1 block text-sm">Categoria</label>
-            <select id="categoria" class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500">
-              <option value="">Selecciona una categoria</option>
+            <label for="categoria" class="mb-1 block text-sm">Categorias</label>
+            <select id="categoria" multiple class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500 h-24">
             </select>
+            <p class="text-xs text-slate-500 mt-1">Ctrl+Click para seleccionar varias</p>
           </div>
           <div>
-            <label for="plataforma" class="mb-1 block text-sm">Plataforma</label>
-            <select id="plataforma" class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500">
-              <option value="">Selecciona una plataforma</option>
+            <label for="plataforma" class="mb-1 block text-sm">Plataformas</label>
+            <select id="plataforma" multiple class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500 h-24">
             </select>
+            <p class="text-xs text-slate-500 mt-1">Ctrl+Click para seleccionar varias</p>
           </div>
           <div class="md:col-span-2">
             <label for="descripcion" class="mb-1 block text-sm">Descripcion</label>
@@ -97,11 +97,12 @@ import Layout from "../layouts/Layout.astro";
 
 <script>
   import { api } from "../lib/api";
-  import { getJwtRole, getToken } from "../lib/client-store";
+  import { getJwtPayload, getToken } from "../lib/client-store";
   import type { Categoria, Plataforma, Videojuego } from "../lib/types";
 
   const token = getToken();
-  const role = getJwtRole(token);
+  const payload = getJwtPayload(token);
+  const role = payload?.rol;
 
   const accessBlock = document.querySelector<HTMLDivElement>("#access-block");
   const adminContent = document.querySelector<HTMLElement>("#admin-content");
@@ -146,34 +147,21 @@ import Layout from "../layouts/Layout.astro";
 
   function refreshSelectOptions() {
     if (categoriaInput) {
-      categoriaInput.innerHTML =
-        `<option value="">Selecciona una categoria</option>` +
-        categoriasCatalogo.map((c) => `<option value="${c.id ?? ""}">${c.nombre}</option>`).join("");
+      categoriaInput.innerHTML = categoriasCatalogo.map((c) => `<option value="${c.id ?? ""}">${c.nombre}</option>`).join("");
     }
-
     if (plataformaInput) {
-      plataformaInput.innerHTML =
-        `<option value="">Selecciona una plataforma</option>` +
-        plataformasCatalogo.map((p) => `<option value="${p.id ?? ""}">${p.nombre}</option>`).join("");
+      plataformaInput.innerHTML = plataformasCatalogo.map((p) => `<option value="${p.id ?? ""}">${p.nombre}</option>`).join("");
     }
   }
 
-  function extractCatalogMetadata() {
-    const catMap = new Map<number, Categoria>();
-    const platMap = new Map<number, Plataforma>();
-
-    juegos.forEach((juego) => {
-      (juego.categorias ?? []).forEach((cat) => {
-        if (typeof cat.id === "number") catMap.set(cat.id, cat);
-      });
-      (juego.plataformas ?? []).forEach((plat) => {
-        if (typeof plat.id === "number") platMap.set(plat.id, plat);
-      });
-    });
-
-    categoriasCatalogo = Array.from(catMap.values());
-    plataformasCatalogo = Array.from(platMap.values());
-    refreshSelectOptions();
+  async function loadMetadata() {
+    try {
+      categoriasCatalogo = await api.categorias.listar();
+      plataformasCatalogo = await api.plataformas.listar();
+      refreshSelectOptions();
+    } catch (error) {
+      console.error("Error cargando categorias o plataformas", error);
+    }
   }
 
   function renderTable() {
@@ -186,7 +174,7 @@ import Layout from "../layouts/Layout.astro";
               <p class="font-medium">${juego.titulo}</p>
               <p class="text-xs text-slate-500">${juego.descripcion ?? "Sin descripcion"}</p>
             </td>
-            <td class="px-3 py-2">${juego.categorias?.[0]?.nombre ?? "Sin categoria"}</td>
+            <td class="px-3 py-2 text-xs">${juego.categorias?.length ? juego.categorias.map(c => c.nombre).join(", ") : "Sin categoria"}</td>
             <td class="px-3 py-2">$${juego.precioBase.toFixed(2)}</td>
             <td class="px-3 py-2">
               <span class="rounded-full px-2 py-1 text-xs ${juego.stock > 0 ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-700"}">
@@ -214,8 +202,15 @@ import Layout from "../layouts/Layout.astro";
         tituloInput.value = juego.titulo;
         precioInput.value = String(juego.precioBase);
         stockInput.value = String(juego.stock);
-        categoriaInput.value = String(juego.categorias?.[0]?.id ?? "");
-        plataformaInput.value = String(juego.plataformas?.[0]?.id ?? "");
+        
+        Array.from(categoriaInput.options).forEach(opt => {
+          opt.selected = juego.categorias?.some(c => String(c.id) === opt.value) ?? false;
+        });
+        
+        Array.from(plataformaInput.options).forEach(opt => {
+          opt.selected = juego.plataformas?.some(p => String(p.id) === opt.value) ?? false;
+        });
+
         descripcionInput.value = juego.descripcion ?? "";
         if (formTitle) formTitle.textContent = "Editar videojuego";
         formWrapper?.classList.remove("hidden");
@@ -249,7 +244,7 @@ import Layout from "../layouts/Layout.astro";
   async function loadInventory() {
     try {
       juegos = await api.videojuegos.listar();
-      extractCatalogMetadata();
+      await loadMetadata();
       renderTable();
       updateStats();
     } catch (error) {
@@ -271,15 +266,22 @@ import Layout from "../layouts/Layout.astro";
     event.preventDefault();
     if (!token || !idInput || !tituloInput || !precioInput || !stockInput || !categoriaInput || !plataformaInput || !descripcionInput) return;
 
-    const categoriaId = Number(categoriaInput.value);
-    const plataformaId = Number(plataformaInput.value);
+    const selectedCategories = Array.from(categoriaInput.selectedOptions).map(opt => ({ 
+      id: Number(opt.value),
+      nombre: opt.textContent ?? ""
+    }));
+    const selectedPlatforms = Array.from(plataformaInput.selectedOptions).map(opt => ({ 
+      id: Number(opt.value),
+      nombre: opt.textContent ?? ""
+    }));
+
     const payload = {
       titulo: tituloInput.value.trim(),
       descripcion: descripcionInput.value.trim(),
       precioBase: Number(precioInput.value),
       stock: Number(stockInput.value),
-      categorias: Number.isFinite(categoriaId) && categoriaInput.value ? [{ id: categoriaId }] : [],
-      plataformas: Number.isFinite(plataformaId) && plataformaInput.value ? [{ id: plataformaId }] : [],
+      categorias: selectedCategories,
+      plataformas: selectedPlatforms,
     };
 
     try {

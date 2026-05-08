@@ -17,16 +17,19 @@ export function getToken(): string {
   return localStorage.getItem(TOKEN_KEY) ?? "";
 }
 
-export function getJwtRole(token: string): string {
-  if (!token) return "";
+export function getJwtPayload(token: string): { email: string; rol: string } | null {
+  if (!token) return null;
   try {
     const payloadBase64 = token.split(".")[1];
-    if (!payloadBase64) return "";
+    if (!payloadBase64) return null;
     const normalized = payloadBase64.replace(/-/g, "+").replace(/_/g, "/");
     const json = JSON.parse(atob(normalized));
-    return String(json.rol ?? "");
+    return {
+      email: String(json.sub ?? ""),
+      rol: String(json.rol ?? ""),
+    };
   } catch {
-    return "";
+    return null;
   }
 }
 

@@ -113,6 +113,12 @@ export const api = {
         },
       }),
   },
+  categorias: {
+    listar: () => request<any[]>("/api/categorias"),
+  },
+  plataformas: {
+    listar: () => request<any[]>("/api/plataformas"),
+  },
 };
 
 export { API_BASE_URL };
