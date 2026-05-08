@@ -32,12 +32,14 @@ public class SecurityConfig {
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Modo JWT
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/videojuegos/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/videojuegos", "/api/videojuegos/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/categorias", "/api/categorias/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/plataformas", "/api/plataformas/**").permitAll()
                 
                 // Rutas de Administrador
-                .requestMatchers(HttpMethod.POST, "/api/videojuegos/**").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/videojuegos/**").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/videojuegos/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/videojuegos", "/api/videojuegos/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/videojuegos", "/api/videojuegos/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/videojuegos", "/api/videojuegos/**").hasAuthority("ADMIN")
                 
                 // Rutas de Cliente
                 .requestMatchers("/api/pedidos/**").authenticated()
