@@ -68,3 +68,9 @@ export function clearCart(): void {
   if (typeof localStorage === "undefined") return;
   localStorage.removeItem(CART_KEY);
 }
+
+export function removeFromCart(idVideojuego: number): void {
+  const cart = getCart();
+  const updatedCart = cart.filter((item) => item.idVideojuego !== idVideojuego);
+  saveCart(updatedCart);
+}

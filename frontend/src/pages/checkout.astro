@@ -46,13 +46,53 @@ import Layout from "../layouts/Layout.astro";
     cartList.innerHTML = cart
       .map((item) => {
         const game = catalogo.find((x) => x.id === item.idVideojuego);
-        const subtotal = (game?.precio ?? 0) * item.cantidad;
+        const descuento = game?.descuento ?? 0;
+        const precioUnitario = (game?.precio ?? 0) * (1 - descuento / 100);
+        const subtotal = precioUnitario * item.cantidad;
         total += subtotal;
-        return `<li class="rounded border border-slate-200 bg-slate-50 p-3">${game?.titulo ?? "Producto"} x${item.cantidad} - $${subtotal.toFixed(2)}</li>`;
+        return `<li class="rounded border border-slate-200 bg-slate-50 p-3 flex justify-between items-center">
+          <div class="flex items-center gap-3">
+            <span class="font-medium text-slate-800">${game?.titulo ?? "Producto"}</span>
+            <span class="text-xs bg-slate-200 px-2 py-0.5 rounded-full text-slate-700 font-bold">x${item.cantidad}</span>
+          </div>
+          <div class="flex items-center gap-4">
+            <span>
+              ${descuento > 0 ? `<span class="text-xs text-emerald-600 mr-1 font-bold">(-${descuento}%)</span>` : ""}
+              <span class="font-bold text-slate-700">$${subtotal.toFixed(2)}</span>
+            </span>
+            <button class="remove-btn text-rose-500 hover:text-rose-700 hover:bg-rose-100 p-1.5 rounded transition-colors" data-id="${item.idVideojuego}" title="Eliminar del carrito">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18"></path>
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+              </svg>
+            </button>
+          </div>
+        </li>`;
       })
       .join("");
 
     cartTotal.textContent = `Total estimado: $${total.toFixed(2)}`;
+
+    const removeButtons = cartList.querySelectorAll(".remove-btn");
+    removeButtons.forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = Number(btn.getAttribute("data-id"));
+        if (!isNaN(id)) {
+          // Dynamic import of removeFromCart to avoid changing top-level imports in this specific script replacement, 
+          // but wait, I can just import it at the top. Let's just use it, since I'll update the imports.
+          import("../lib/client-store").then(({ removeFromCart }) => {
+            removeFromCart(id);
+            renderCart().then(() => {
+              if (message) {
+                message.textContent = "Producto eliminado.";
+                message.className = "mt-4 text-sm text-fuchsia-700";
+              }
+            });
+          });
+        }
+      });
+    });
   }
 
   checkoutBtn?.addEventListener("click", async () => {
