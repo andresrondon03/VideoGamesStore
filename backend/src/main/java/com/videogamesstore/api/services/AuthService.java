@@ -25,8 +25,8 @@ public class AuthService {
         }
 
         // Corrección: Búsqueda segura por nombre de rol
-        Rol rolCliente = rolRepository.findByRol("CLIENTE")
-                .orElseThrow(() -> new RuntimeException("Error: Rol 'CLIENTE' no configurado en la BD"));
+        Rol rolCliente = rolRepository.findByRol("USER")
+                .orElseThrow(() -> new RuntimeException("Error: Rol 'USER' no configurado en la BD"));
 
         Usuario usuario = new Usuario();
         usuario.setNickname(request.getNickname());
