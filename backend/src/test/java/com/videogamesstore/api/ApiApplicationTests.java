@@ -25,6 +25,7 @@ class ApiApplicationTests {
     @Autowired private AuthService authService;
     @Autowired private VideojuegoService videojuegoService;
     @Autowired private VideojuegoRepository videojuegoRepository;
+    @Autowired private com.videogamesstore.api.services.PedidoService pedidoService;
 
     @Test
     void test01_RegistroUsuarioExitoso() {
@@ -74,5 +75,25 @@ class ApiApplicationTests {
         assertTimeout(Duration.ofMillis(300), () -> {
             videojuegoService.obtenerFiltrados(null, "RPG", null, null);
         });
+    }
+
+    @Test
+    void test07_FalloPorStockInsuficiente() {
+        // Asumiendo que el usuario 'santiago_dev' y el juego ID 1 existen por el data.sql
+        com.videogamesstore.api.dto.PedidoRequest req = new com.videogamesstore.api.dto.PedidoRequest();
+        com.videogamesstore.api.dto.ItemCarritoDTO item = new com.videogamesstore.api.dto.ItemCarritoDTO();
+        
+        item.setIdVideojuego(1); // Juego existente
+        item.setCantidad(9999); // Cantidad exagerada para forzar el error de stock
+        req.setItems(List.of(item));
+
+        // Debe lanzar una excepción debido al stock insuficiente y hacer Rollback
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            pedidoService.procesarCheckout("santiago@example.com", req);
+        });
+        
+        // Verificamos que el mensaje sea el correcto
+        assertNotNull(exception.getMessage());
+        org.junit.jupiter.api.Assertions.assertTrue(exception.getMessage().contains("Stock insuficiente"));
     }
 }
