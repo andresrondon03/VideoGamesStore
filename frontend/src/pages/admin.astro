@@ -3,95 +3,188 @@ import Navbar from "../components/Navbar.astro";
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="Panel Admin | TechZone Gaming" description="Vista admin para inventario y resumen de pedidos.">
+<Layout
+  title="Panel Admin | TechZone Gaming"
+  description="Vista admin para inventario y resumen de pedidos."
+>
   <Navbar currentPath={Astro.url.pathname} />
   <main class="mx-auto w-full max-w-6xl px-4 py-12 text-slate-900">
     <h1 class="mb-1 text-4xl font-bold">Panel de Administración</h1>
-    <p class="mb-8 text-slate-600">Gestiona el inventario completo de tu tienda tech</p>
+    <p class="mb-8 text-slate-600">
+      Gestiona el inventario completo de tu tienda tech
+    </p>
 
-    <div id="access-block" class="mb-8 hidden rounded-xl border border-rose-200 bg-rose-50 p-6 text-rose-700"></div>
+    <div
+      id="access-block"
+      class="mb-8 hidden rounded-xl border border-rose-200 bg-rose-50 p-6 text-rose-700"
+    >
+    </div>
 
     <section id="admin-content" class="space-y-6">
       <div class="grid gap-4 md:grid-cols-3">
-        <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <article
+          class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+        >
           <p class="mb-3 text-xs font-medium text-slate-500">Total Productos</p>
           <p id="stat-total" class="text-3xl font-bold">0</p>
           <p class="text-xs text-slate-500">En stock</p>
         </article>
-        <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p class="mb-3 text-xs font-medium text-slate-500">Valor Inventario</p>
+        <article
+          class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+        >
+          <p class="mb-3 text-xs font-medium text-slate-500">
+            Valor Inventario
+          </p>
           <p id="stat-value" class="text-3xl font-bold">$0.00</p>
           <p class="text-xs text-slate-500">Valor total en catalogo</p>
         </article>
-        <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p class="mb-3 text-xs font-medium text-slate-500">Promociones Activas</p>
+        <article
+          class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+        >
+          <p class="mb-3 text-xs font-medium text-slate-500">
+            Promociones Activas
+          </p>
           <p id="stat-promos" class="text-3xl font-bold">0</p>
           <p class="text-xs text-slate-500">Productos con descuento</p>
         </article>
       </div>
 
-      <button id="toggle-form" class="rounded-md bg-fuchsia-600 px-4 py-2 text-sm font-semibold text-white hover:bg-fuchsia-500">
+      <button
+        id="toggle-form"
+        class="rounded-md bg-fuchsia-600 px-4 py-2 text-sm font-semibold text-white hover:bg-fuchsia-500"
+      >
         + Agregar Nuevo Producto
       </button>
 
-      <section id="crud-form-wrapper" class="hidden rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 id="form-title" class="mb-4 text-xl font-semibold">Crear videojuego</h2>
+      <section
+        id="crud-form-wrapper"
+        class="hidden rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+      >
+        <h2 id="form-title" class="mb-4 text-xl font-semibold">
+          Crear videojuego
+        </h2>
         <form id="game-form" class="grid gap-4 md:grid-cols-2">
           <input id="game-id" type="hidden" />
-          
+
           <div>
             <label for="titulo" class="mb-1 block text-sm">Titulo</label>
-            <input id="titulo" required class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500" />
+            <input
+              id="titulo"
+              required
+              class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500"
+            />
           </div>
-          
+
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label for="precio" class="mb-1 block text-sm">Precio Base</label>
-              <input id="precio" type="number" min="0" step="0.01" required class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500" />
+              <input
+                id="precio"
+                type="number"
+                min="0"
+                step="0.01"
+                required
+                class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500"
+              />
             </div>
             <div>
-              <label for="descuento" class="mb-1 block text-sm">Descuento (%)</label>
-              <input id="descuento" type="number" min="0" max="100" value="0" required class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500" />
+              <label for="descuento" class="mb-1 block text-sm"
+                >Descuento (%)</label
+              >
+              <input
+                id="descuento"
+                type="number"
+                min="0"
+                max="100"
+                value="0"
+                required
+                class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500"
+              />
             </div>
           </div>
 
           <div>
             <label for="stock" class="mb-1 block text-sm">Stock</label>
-            <input id="stock" type="number" min="0" required class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500" />
+            <input
+              id="stock"
+              type="number"
+              min="0"
+              required
+              class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500"
+            />
           </div>
 
           <div>
-            <label for="imagenUrl" class="mb-1 block text-sm">URL de la Imagen</label>
-            <input id="imagenUrl" type="text" placeholder="/images/juego.jpg o https://..." class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500" />
+            <label for="imagenUrl" class="mb-1 block text-sm"
+              >URL de la Imagen</label
+            >
+            <input
+              id="imagenUrl"
+              type="text"
+              placeholder="/images/juego.jpg o https://..."
+              class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500"
+            />
           </div>
 
           <div>
             <label for="categoria" class="mb-1 block text-sm">Categorias</label>
-            <select id="categoria" multiple class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500 h-24">
+            <select
+              id="categoria"
+              multiple
+              class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500 h-24"
+            >
             </select>
-            <p class="text-xs text-slate-500 mt-1">Ctrl+Click para seleccionar varias</p>
+            <p class="text-xs text-slate-500 mt-1">
+              Ctrl+Click para seleccionar varias
+            </p>
           </div>
-          
+
           <div>
-            <label for="plataforma" class="mb-1 block text-sm">Plataformas</label>
-            <select id="plataforma" multiple class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500 h-24">
+            <label for="plataforma" class="mb-1 block text-sm"
+              >Plataformas</label
+            >
+            <select
+              id="plataforma"
+              multiple
+              class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500 h-24"
+            >
             </select>
-            <p class="text-xs text-slate-500 mt-1">Ctrl+Click para seleccionar varias</p>
+            <p class="text-xs text-slate-500 mt-1">
+              Ctrl+Click para seleccionar varias
+            </p>
           </div>
 
           <div class="md:col-span-2">
-            <label for="descripcion" class="mb-1 block text-sm">Descripcion</label>
-            <textarea id="descripcion" rows="3" class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500"></textarea>
+            <label for="descripcion" class="mb-1 block text-sm"
+              >Descripcion</label
+            >
+            <textarea
+              id="descripcion"
+              rows="3"
+              class="w-full rounded border border-slate-300 px-3 py-2 outline-none focus:border-fuchsia-500"
+            ></textarea>
           </div>
-          
+
           <div class="md:col-span-2 flex gap-3">
-            <button id="submit-btn" type="submit" class="rounded bg-fuchsia-600 px-4 py-2 text-sm font-semibold text-white hover:bg-fuchsia-500">Guardar</button>
-            <button id="cancel-edit" type="button" class="rounded border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancelar</button>
+            <button
+              id="submit-btn"
+              type="submit"
+              class="rounded bg-fuchsia-600 px-4 py-2 text-sm font-semibold text-white hover:bg-fuchsia-500"
+              >Guardar</button
+            >
+            <button
+              id="cancel-edit"
+              type="button"
+              class="rounded border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              >Cancelar</button
+            >
           </div>
         </form>
       </section>
 
-      <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section
+        class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+      >
         <h2 class="mb-4 text-xl font-semibold">Inventario de Productos</h2>
         <div class="overflow-x-auto">
           <table class="min-w-full text-left text-sm">
@@ -125,16 +218,20 @@ import Layout from "../layouts/Layout.astro";
 
   const accessBlock = document.querySelector<HTMLDivElement>("#access-block");
   const adminContent = document.querySelector<HTMLElement>("#admin-content");
-  const tableBody = document.querySelector<HTMLTableSectionElement>("#inventory-body");
+  const tableBody =
+    document.querySelector<HTMLTableSectionElement>("#inventory-body");
   const message = document.querySelector<HTMLParagraphElement>("#message");
   const statTotal = document.querySelector<HTMLParagraphElement>("#stat-total");
   const statValue = document.querySelector<HTMLParagraphElement>("#stat-value");
-  const statPromos = document.querySelector<HTMLParagraphElement>("#stat-promos");
-  const toggleFormBtn = document.querySelector<HTMLButtonElement>("#toggle-form");
+  const statPromos =
+    document.querySelector<HTMLParagraphElement>("#stat-promos");
+  const toggleFormBtn =
+    document.querySelector<HTMLButtonElement>("#toggle-form");
   const formWrapper = document.querySelector<HTMLElement>("#crud-form-wrapper");
   const formTitle = document.querySelector<HTMLHeadingElement>("#form-title");
   const gameForm = document.querySelector<HTMLFormElement>("#game-form");
-  const cancelEditBtn = document.querySelector<HTMLButtonElement>("#cancel-edit");
+  const cancelEditBtn =
+    document.querySelector<HTMLButtonElement>("#cancel-edit");
 
   const idInput = document.querySelector<HTMLInputElement>("#game-id");
   const tituloInput = document.querySelector<HTMLInputElement>("#titulo");
@@ -142,9 +239,12 @@ import Layout from "../layouts/Layout.astro";
   const descuentoInput = document.querySelector<HTMLInputElement>("#descuento");
   const stockInput = document.querySelector<HTMLInputElement>("#stock");
   const imagenUrlInput = document.querySelector<HTMLInputElement>("#imagenUrl");
-  const categoriaInput = document.querySelector<HTMLSelectElement>("#categoria");
-  const plataformaInput = document.querySelector<HTMLSelectElement>("#plataforma");
-  const descripcionInput = document.querySelector<HTMLTextAreaElement>("#descripcion");
+  const categoriaInput =
+    document.querySelector<HTMLSelectElement>("#categoria");
+  const plataformaInput =
+    document.querySelector<HTMLSelectElement>("#plataforma");
+  const descripcionInput =
+    document.querySelector<HTMLTextAreaElement>("#descripcion");
 
   let juegos: Videojuego[] = [];
   let categoriasCatalogo: Categoria[] = [];
@@ -153,12 +253,16 @@ import Layout from "../layouts/Layout.astro";
   function setMessage(text: string, tone: "ok" | "error" = "ok") {
     if (!message) return;
     message.textContent = text;
-    message.className = tone === "ok" ? "text-sm text-emerald-600" : "text-sm text-rose-600";
+    message.className =
+      tone === "ok" ? "text-sm text-emerald-600" : "text-sm text-rose-600";
   }
 
   function updateStats() {
     const totalProductos = juegos.length;
-    const valorInventario = juegos.reduce((acc, juego) => acc + juego.precio * juego.stock, 0);
+    const valorInventario = juegos.reduce(
+      (acc, juego) => acc + juego.precio * juego.stock,
+      0,
+    );
     const promociones = juegos.filter((juego) => juego.descuento > 0).length; // Actualizado para usar el campo descuento real
 
     if (statTotal) statTotal.textContent = String(totalProductos);
@@ -168,10 +272,14 @@ import Layout from "../layouts/Layout.astro";
 
   function refreshSelectOptions() {
     if (categoriaInput) {
-      categoriaInput.innerHTML = categoriasCatalogo.map((c) => `<option value="${c.id ?? ""}">${c.nombre}</option>`).join("");
+      categoriaInput.innerHTML = categoriasCatalogo
+        .map((c) => `<option value="${c.id ?? ""}">${c.nombre}</option>`)
+        .join("");
     }
     if (plataformaInput) {
-      plataformaInput.innerHTML = plataformasCatalogo.map((p) => `<option value="${p.id ?? ""}">${p.nombre}</option>`).join("");
+      plataformaInput.innerHTML = plataformasCatalogo
+        .map((p) => `<option value="${p.id ?? ""}">${p.nombre}</option>`)
+        .join("");
     }
   }
 
@@ -193,7 +301,7 @@ import Layout from "../layouts/Layout.astro";
           <tr class="border-b border-slate-100 text-slate-700 hover:bg-slate-50 transition-colors">
             <td class="px-3 py-2">
               <img 
-                src="${juego.imagenUrl || '/placeholder.jpg'}" 
+                src="${juego.imagenUrl || "/placeholder.jpg"}" 
                 alt="${juego.titulo}" 
                 onerror="this.src='/placeholder.jpg'; this.onerror=null;"
                 class="w-12 h-12 object-contain bg-slate-800 rounded shadow-sm border border-slate-700 p-0.5" 
@@ -203,10 +311,10 @@ import Layout from "../layouts/Layout.astro";
               <p class="font-medium">${juego.titulo}</p>
               <p class="text-xs text-slate-500 w-48 truncate">${juego.descripcion ?? "Sin descripcion"}</p>
             </td>
-            <td class="px-3 py-2 text-xs">${juego.categorias?.length ? juego.categorias.map(c => c.nombre).join(", ") : "Sin categoria"}</td>
+            <td class="px-3 py-2 text-xs">${juego.categorias?.length ? juego.categorias.map((c) => c.nombre).join(", ") : "Sin categoria"}</td>
             <td class="px-3 py-2">
               $${juego.precio.toFixed(2)}
-              ${juego.descuento > 0 ? `<br><span class="inline-block mt-1 bg-fuchsia-100 text-fuchsia-700 text-xs px-2 py-0.5 rounded font-medium">-${juego.descuento}%</span>` : ''}
+              ${juego.descuento > 0 ? `<br><span class="inline-block mt-1 bg-fuchsia-100 text-fuchsia-700 text-xs px-2 py-0.5 rounded font-medium">-${juego.descuento}%</span>` : ""}
             </td>
             <td class="px-3 py-2">
               <span class="rounded-full px-2 py-1 text-xs ${juego.stock > 0 ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-700"}">
@@ -222,37 +330,53 @@ import Layout from "../layouts/Layout.astro";
       )
       .join("");
 
-    const editButtons = tableBody.querySelectorAll<HTMLButtonElement>("[data-edit]");
-    const deleteButtons = tableBody.querySelectorAll<HTMLButtonElement>("[data-delete]");
+    const editButtons =
+      tableBody.querySelectorAll<HTMLButtonElement>("[data-edit]");
+    const deleteButtons =
+      tableBody.querySelectorAll<HTMLButtonElement>("[data-delete]");
 
     editButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
         const id = Number(btn.dataset.edit);
         const juego = juegos.find((item) => item.id === id);
-        
-        if (!juego || !idInput || !tituloInput || !precioInput || !descuentoInput || !stockInput || !imagenUrlInput || !categoriaInput || !plataformaInput || !descripcionInput) return;
-        
+
+        if (
+          !juego ||
+          !idInput ||
+          !tituloInput ||
+          !precioInput ||
+          !descuentoInput ||
+          !stockInput ||
+          !imagenUrlInput ||
+          !categoriaInput ||
+          !plataformaInput ||
+          !descripcionInput
+        )
+          return;
+
         idInput.value = String(juego.id);
         tituloInput.value = juego.titulo;
         precioInput.value = String(juego.precio);
         descuentoInput.value = String(juego.descuento || 0);
         stockInput.value = String(juego.stock);
         imagenUrlInput.value = juego.imagenUrl || "";
-        
-        Array.from(categoriaInput.options).forEach(opt => {
-          opt.selected = juego.categorias?.some(c => String(c.id) === opt.value) ?? false;
+
+        Array.from(categoriaInput.options).forEach((opt) => {
+          opt.selected =
+            juego.categorias?.some((c) => String(c.id) === opt.value) ?? false;
         });
-        
-        Array.from(plataformaInput.options).forEach(opt => {
-          opt.selected = juego.plataformas?.some(p => String(p.id) === opt.value) ?? false;
+
+        Array.from(plataformaInput.options).forEach((opt) => {
+          opt.selected =
+            juego.plataformas?.some((p) => String(p.id) === opt.value) ?? false;
         });
 
         descripcionInput.value = juego.descripcion ?? "";
         if (formTitle) formTitle.textContent = "Editar videojuego";
         formWrapper?.classList.remove("hidden");
-        
+
         // Scroll smooth hacia el formulario
-        formWrapper?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        formWrapper?.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     });
 
@@ -260,14 +384,21 @@ import Layout from "../layouts/Layout.astro";
       btn.addEventListener("click", async () => {
         const id = Number(btn.dataset.delete);
         if (!id || !token) return;
-        const confirmDelete = window.confirm("¿Seguro que deseas eliminar este videojuego?");
+        const confirmDelete = window.confirm(
+          "¿Seguro que deseas eliminar este videojuego?",
+        );
         if (!confirmDelete) return;
         try {
           await api.videojuegos.eliminar(token, id);
           await loadInventory();
           setMessage("Videojuego eliminado correctamente.");
         } catch (error) {
-          setMessage(error instanceof Error ? error.message : "No se pudo eliminar el videojuego.", "error");
+          setMessage(
+            error instanceof Error
+              ? error.message
+              : "No se pudo eliminar el videojuego.",
+            "error",
+          );
         }
       });
     });
@@ -288,7 +419,12 @@ import Layout from "../layouts/Layout.astro";
       renderTable();
       updateStats();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "No se pudo cargar inventario.", "error");
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "No se pudo cargar inventario.",
+        "error",
+      );
     }
   }
 
@@ -304,21 +440,37 @@ import Layout from "../layouts/Layout.astro";
 
   gameForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (!token || !idInput || !tituloInput || !precioInput || !descuentoInput || !stockInput || !imagenUrlInput || !categoriaInput || !plataformaInput || !descripcionInput) return;
+    if (
+      !token ||
+      !idInput ||
+      !tituloInput ||
+      !precioInput ||
+      !descuentoInput ||
+      !stockInput ||
+      !imagenUrlInput ||
+      !categoriaInput ||
+      !plataformaInput ||
+      !descripcionInput
+    )
+      return;
 
-    const selectedCategories = Array.from(categoriaInput.selectedOptions).map(opt => ({ 
-      id: Number(opt.value),
-      nombre: opt.textContent ?? ""
-    }));
-    const selectedPlatforms = Array.from(plataformaInput.selectedOptions).map(opt => ({ 
-      id: Number(opt.value),
-      nombre: opt.textContent ?? ""
-    }));
+    const selectedCategories = Array.from(categoriaInput.selectedOptions).map(
+      (opt) => ({
+        id: Number(opt.value),
+        nombre: opt.textContent ?? "",
+      }),
+    );
+    const selectedPlatforms = Array.from(plataformaInput.selectedOptions).map(
+      (opt) => ({
+        id: Number(opt.value),
+        nombre: opt.textContent ?? "",
+      }),
+    );
 
     const payload = {
       titulo: tituloInput.value.trim(),
       descripcion: descripcionInput.value.trim(),
-      precioBase: Number(precioInput.value),
+      precio: Number(precioInput.value),
       descuento: Number(descuentoInput.value),
       stock: Number(stockInput.value),
       imagenUrl: imagenUrlInput.value.trim(),
@@ -339,7 +491,10 @@ import Layout from "../layouts/Layout.astro";
       formWrapper?.classList.add("hidden");
       await loadInventory();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Error al guardar videojuego.", "error");
+      setMessage(
+        error instanceof Error ? error.message : "Error al guardar videojuego.",
+        "error",
+      );
     }
   });
 
@@ -347,7 +502,8 @@ import Layout from "../layouts/Layout.astro";
     if (adminContent) adminContent.classList.add("hidden");
     if (accessBlock) {
       accessBlock.classList.remove("hidden");
-      accessBlock.textContent = "Acceso denegado. Este panel es solo para administradores.";
+      accessBlock.textContent =
+        "Acceso denegado. Este panel es solo para administradores.";
     }
   } else {
     loadInventory();
