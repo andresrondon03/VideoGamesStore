@@ -3,11 +3,18 @@ import Navbar from "../components/Navbar.astro";
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="Historial | TechZone Gaming" description="Consulta tu historial de pedidos como cliente autenticado.">
+<Layout
+  title="Historial | TechZone Gaming"
+  description="Consulta tu historial de pedidos como cliente autenticado."
+>
   <Navbar currentPath={Astro.url.pathname} />
   <main class="mx-auto w-full max-w-4xl px-4 py-12">
-    <h1 class="mb-6 text-3xl font-bold text-slate-900">Historial de pedidos</h1>
-    <p class="mb-4 text-slate-600">Esta vista consume <code>/api/pedidos/historial</code> usando JWT.</p>
+    <h1 id="page-title" class="mb-6 text-3xl font-bold text-slate-900">
+      Historial de pedidos
+    </h1>
+    <p id="page-desc" class="mb-4 text-slate-600">
+      Esta vista consume <code>/api/pedidos/historial</code> usando JWT.
+    </p>
     <div id="history-list" class="space-y-4"></div>
     <p id="message" class="mt-4 text-sm"></p>
   </main>
@@ -15,14 +22,19 @@ import Layout from "../layouts/Layout.astro";
 
 <script>
   import { api } from "../lib/api";
-  import { getToken } from "../lib/client-store";
+  import { getToken, getJwtPayload } from "../lib/client-store";
+  import type { Pedido } from "../lib/types";
 
   const container = document.querySelector("#history-list");
   const message = document.querySelector("#message");
+  const pageTitle = document.querySelector("#page-title");
+  const pageDesc = document.querySelector("#page-desc");
 
   async function loadHistory() {
     const token = getToken();
-    if (!token) {
+    const payload = getJwtPayload(token);
+
+    if (!token || !payload) {
       if (message) {
         message.textContent = "Inicia sesion para ver tu historial.";
         message.className = "mt-4 text-sm text-rose-600";
@@ -31,27 +43,81 @@ import Layout from "../layouts/Layout.astro";
     }
 
     try {
-      const pedidos = await api.pedidos.historial(token);
+      const isAdmin = payload.rol === "ADMIN";
+
+      if (isAdmin) {
+        if (pageTitle) pageTitle.textContent = "Todos los pedidos (Admin)";
+        if (pageDesc)
+          pageDesc.innerHTML =
+            "Vista de administrador. Consumiendo <code>/api/pedidos/admin/todos</code>";
+      }
+
+      const pedidos = isAdmin
+        ? await api.pedidos.todosAdmin(token)
+        : await api.pedidos.historial(token);
+
       if (!container) return;
       if (pedidos.length === 0) {
-        container.innerHTML = "<p class='rounded border border-slate-200 bg-white p-4 text-slate-600'>Aun no tienes pedidos.</p>";
+        container.innerHTML =
+          "<p class='rounded border border-slate-200 bg-white p-4 text-slate-600'>No hay pedidos disponibles.</p>";
         return;
       }
 
       container.innerHTML = pedidos
         .map(
-          (pedido) => `
-            <article class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-              <p class="font-semibold text-fuchsia-700">Pedido #${pedido.id}</p>
-              <p class="text-sm text-slate-700">Estado: ${pedido.estado} | Total: $${pedido.total.toFixed(2)}</p>
-              <p class="text-xs text-slate-500">Fecha: ${pedido.fechaCompra ?? "No disponible"}</p>
+          (pedido: Pedido) => `
+            <article class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col gap-3">
+              <div class="flex justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <p class="font-semibold text-fuchsia-700">Pedido #${pedido.id}</p>
+                  <p class="text-sm text-slate-700">Estado: <span class="font-medium">${pedido.estado}</span></p>
+                </div>
+                <div class="text-right">
+                  <p class="font-bold text-slate-900">Total: $${pedido.total.toFixed(2)}</p>
+                  <p class="text-xs text-slate-500">Fecha: ${pedido.fechaCompra ? new Date(pedido.fechaCompra).toLocaleString() : "No disponible"}</p>
+                </div>
+              </div>
+              
+              ${
+                isAdmin && pedido.usuario
+                  ? `
+              <div class="rounded-lg bg-slate-50 p-3 text-sm text-slate-700 border border-slate-100">
+                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Información del Cliente</p>
+                <p><span class="font-medium">Usuario:</span> ${pedido.usuario.nickname}</p>
+                <p><span class="font-medium">Email:</span> ${pedido.usuario.email}</p>
+              </div>
+              `
+                  : ""
+              }
+              
+              <div class="mt-1">
+                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Videojuegos adquiridos</p>
+                <ul class="space-y-2">
+                  ${pedido.detalles
+                    .map(
+                      (d) => `
+                    <li class="text-sm text-slate-700 flex justify-between items-center bg-slate-50/50 p-2 rounded">
+                      <div class="flex items-center gap-2">
+                        <span class="bg-slate-200 text-slate-700 text-xs font-bold px-2 py-0.5 rounded-full">${d.cantidad}x</span>
+                        <span class="font-medium">${d.videojuego?.titulo || "Juego desconocido"}</span>
+                      </div>
+                      <span class="text-slate-600 font-medium">$${(d.cantidad * d.precioUnitario).toFixed(2)}</span>
+                    </li>
+                  `,
+                    )
+                    .join("")}
+                </ul>
+              </div>
             </article>
           `,
         )
         .join("");
     } catch (error) {
       if (message) {
-        message.textContent = error instanceof Error ? error.message : "No se pudo cargar el historial.";
+        message.textContent =
+          error instanceof Error
+            ? error.message
+            : "No se pudo cargar el historial.";
         message.className = "mt-4 text-sm text-rose-600";
       }
     }
