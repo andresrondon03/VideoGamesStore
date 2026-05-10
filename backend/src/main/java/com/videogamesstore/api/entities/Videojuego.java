@@ -2,6 +2,8 @@ package com.videogamesstore.api.entities;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,17 +25,25 @@ public class Videojuego {
     @Column(name = "id_vj")
     private Integer id;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 100)
     private String titulo;
     
-    @Column(length = 50)
+    @Column(columnDefinition = "TEXT")
     private String descripcion;
     
+    // IMPORTANTE: Se llama precio en Java, pero se guarda en precio_base en SQL
     @Column(name = "precio_base", nullable = false)
-    private Double precioBase;
+    private Double precio;
     
     @Column(nullable = false)
     private Integer stock;
+
+    // NUEVOS CAMPOS
+    @Column(name = "descuento")
+    private Integer descuento = 0;
+
+    @Column(name = "imagen_url", columnDefinition = "TEXT")
+    private String imagenUrl;
 
     // Relación Muchos a Muchos con Categorías (Tabla pivote: vj_cat)
     @ManyToMany
@@ -42,6 +52,7 @@ public class Videojuego {
         joinColumns = @JoinColumn(name = "id_vj"),
         inverseJoinColumns = @JoinColumn(name = "id_cat")
     )
+    @JsonIgnoreProperties("videojuegos") // Evita recursividad infinita en JSON
     private List<Categoria> categorias;
 
     // Relación Muchos a Muchos con Plataformas (Tabla pivote: vj_plat)
@@ -51,5 +62,6 @@ public class Videojuego {
         joinColumns = @JoinColumn(name = "id_vj"),
         inverseJoinColumns = @JoinColumn(name = "id_plat")
     )
+    @JsonIgnoreProperties("videojuegos") // Evita recursividad infinita en JSON
     private List<Plataforma> plataformas;
 }

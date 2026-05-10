@@ -46,7 +46,7 @@ import Layout from "../layouts/Layout.astro";
     cartList.innerHTML = cart
       .map((item) => {
         const game = catalogo.find((x) => x.id === item.idVideojuego);
-        const subtotal = (game?.precioBase ?? 0) * item.cantidad;
+        const subtotal = (game?.precio ?? 0) * item.cantidad;
         total += subtotal;
         return `<li class="rounded border border-slate-200 bg-slate-50 p-3">${game?.titulo ?? "Producto"} x${item.cantidad} - $${subtotal.toFixed(2)}</li>`;
       })

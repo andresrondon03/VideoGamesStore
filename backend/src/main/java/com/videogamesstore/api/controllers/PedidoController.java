@@ -26,7 +26,7 @@ public class PedidoController {
     @PostMapping("/checkout")
     public ResponseEntity<?> realizarCompra(@RequestBody PedidoRequest request) {
         try {
-            // Seguridad: Extraer el email del usuario logueado en base al token
+            // Seguridad: Extraer el email del usuario logueado en base al token JWT
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String emailLogueado = auth.getName();
 

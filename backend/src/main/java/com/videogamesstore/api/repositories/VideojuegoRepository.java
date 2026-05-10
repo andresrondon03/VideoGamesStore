@@ -10,7 +10,7 @@ public interface VideojuegoRepository extends JpaRepository<Videojuego, Integer>
     
     List<Videojuego> findByTituloContainingIgnoreCase(String titulo);
 
-    List<Videojuego> findByPrecioBaseLessThanEqual(Double precio);
+    List<Videojuego> findByPrecioLessThanEqual(Double precio);
     
     List<Videojuego> findByPlataformasNombreIgnoreCase(String nombrePlataforma);
 

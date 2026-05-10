@@ -46,33 +46,35 @@ public class PedidoService {
                 throw new RuntimeException("Stock insuficiente para: " + vj.getTitulo() + " (Disponibles: " + vj.getStock() + ")");
             }
 
-            // Reducir stock
+            // 1. Reducir stock
             vj.setStock(vj.getStock() - item.getCantidad());
             videojuegoRepository.save(vj);
 
-            // Crear el detalle del pedido
+            // 2. Calcular precio real con descuento
+            int porcentajeDescuento = (vj.getDescuento() != null) ? vj.getDescuento() : 0;
+           double precioFinal = vj.getPrecio() * (1 - (porcentajeDescuento / 100.0));
+
+            // 3. Crear el detalle del pedido
             DetallePedido detalle = new DetallePedido();
             detalle.setPedido(pedido);
             detalle.setVideojuego(vj);
             detalle.setCantidad(item.getCantidad());
-            detalle.setPrecioUnitario(vj.getPrecioBase());
+            detalle.setPrecioUnitario(precioFinal); // Guardar el precio con descuento
             
             pedido.getDetalles().add(detalle);
 
-            // Calcular subtotal
-            total += (vj.getPrecioBase() * item.getCantidad());
+            // 4. Calcular subtotal acumulado
+            total += (precioFinal * item.getCantidad());
         }
 
         pedido.setTotal(total);
-        return pedidoRepository.save(pedido); // Gracias a CascadeType.ALL se guardan los detalles automáticamente
+        return pedidoRepository.save(pedido);
     }
 
-    // RF-17: Historial para el cliente
     public List<Pedido> obtenerHistorialPorEmail(String email) {
         return pedidoRepository.findByUsuarioEmail(email);
     }
 
-    // RF-17: Historial completo para el admin
     public List<Pedido> obtenerTodosLosPedidos() {
         return pedidoRepository.findAll();
     }

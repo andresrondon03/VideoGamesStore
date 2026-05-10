@@ -15,7 +15,6 @@ public class VideojuegoService {
     @Autowired
     private VideojuegoRepository repository;
 
-    // Obtener y filtrar dinámicamente
     public List<Videojuego> obtenerFiltrados(String titulo, String categoria, String plataforma, Double precioMax) {
         List<Videojuego> lista = repository.findAll();
 
@@ -36,7 +35,12 @@ public class VideojuegoService {
         }
         if (precioMax != null) {
             lista = lista.stream()
-                .filter(v -> v.getPrecioBase() <= precioMax)
+                .filter(v -> {
+                    // Filtrar teniendo en cuenta el descuento aplicado
+                    int desc = (v.getDescuento() != null) ? v.getDescuento() : 0;
+                    double precioFinal = v.getPrecio() * (1 - (desc / 100.0));
+                    return precioFinal <= precioMax;
+                })
                 .collect(Collectors.toList());
         }
 
@@ -53,10 +57,14 @@ public class VideojuegoService {
         
         vj.setTitulo(detalles.getTitulo());
         vj.setDescripcion(detalles.getDescripcion());
-        vj.setPrecioBase(detalles.getPrecioBase());
+        vj.setPrecio(detalles.getPrecio());
         vj.setStock(detalles.getStock());
         vj.setCategorias(detalles.getCategorias());
         vj.setPlataformas(detalles.getPlataformas());
+        
+        // Agregar los nuevos campos al método de actualización
+        vj.setDescuento(detalles.getDescuento());
+        vj.setImagenUrl(detalles.getImagenUrl());
         
         return repository.save(vj);
     }

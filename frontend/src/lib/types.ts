@@ -1,10 +1,10 @@
-export interface  Categoria {
-  id?: number;
+export interface Categoria {
+  id: number;
   nombre: string;
 }
 
 export interface Plataforma {
-  id?: number;
+  id: number;
   nombre: string;
 }
 
@@ -12,10 +12,12 @@ export interface Videojuego {
   id: number;
   titulo: string;
   descripcion: string;
-  precioBase: number;
+  precio: number;
   stock: number;
-  categorias: Categoria[];
-  plataformas: Plataforma[];
+  descuento: number;
+  imagenUrl: string;
+  categorias?: Categoria[];
+  plataformas?: Plataforma[];
 }
 
 export interface RegistroRequest {

@@ -72,7 +72,7 @@ try {
           <p class="rounded-lg border border-rose-200 bg-rose-50 p-4 text-rose-700">{catalogoError}</p>
         ) : (
           <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {juegosDestacados.map((game) => <GameCard game={game} />)}
+            {juegosDestacados.map((game) => <GameCard juego={game} />)}
           </div>
         )
       }
