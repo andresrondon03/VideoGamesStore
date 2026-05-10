@@ -192,7 +192,12 @@ import Layout from "../layouts/Layout.astro";
         (juego) => `
           <tr class="border-b border-slate-100 text-slate-700 hover:bg-slate-50 transition-colors">
             <td class="px-3 py-2">
-              <img src="${juego.imagenUrl || '/placeholder.jpg'}" alt="${juego.titulo}" class="w-12 h-12 object-cover rounded shadow-sm border border-slate-200" onerror="this.src='https://via.placeholder.com/150?text=Sin+Imagen'" />
+              <img 
+                src="${juego.imagenUrl || '/placeholder.jpg'}" 
+                alt="${juego.titulo}" 
+                onerror="this.src='/placeholder.jpg'; this.onerror=null;"
+                class="w-12 h-12 object-contain bg-slate-800 rounded shadow-sm border border-slate-700 p-0.5" 
+              />
             </td>
             <td class="px-3 py-2">
               <p class="font-medium">${juego.titulo}</p>
