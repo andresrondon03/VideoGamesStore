@@ -1,26 +1,24 @@
-# VideoGamesStore
+# VideoGamesStore - TechZone Gaming 🎮
 
-Este repositorio contiene el análisis, diseño estructural y documentación técnica de **VideoGamesStore**, una plataforma web diseñada para la gestión y compra simulada de videojuegos. Este proyecto se desarrolla en el marco de la asignatura **Fundamentos de Ingeniería de Software**.
+Plataforma web integral orientada a la gestión y compra simulada de videojuegos. Desarrollada como proyecto para la asignatura de Fundamentos de Ingeniería de Software, esta aplicación cuenta con un catálogo interactivo, carrito de compras, gestión de stock y un panel de administración completo.
 
-## Descripción del Proyecto
-El sistema es una plataforma interactiva que permite a los usuarios registrarse, explorar un catálogo de productos y simular transacciones de compra. Incluye un panel de administración para la gestión de inventario, stock y promociones.
+## 👥 Equipo de Desarrollo
+* **Andrés Felipe Rondón Lara** - Analista, Gestor de Proyecto y QA.
+* **Santiago Andrés Benavides Coral** - Desarrollador Backend y Arquitecto de Datos.
+* **Davidson Sánchez Gordillo** - Desarrollador Frontend y Aseguramiento de Calidad (QA).
 
-## Gestión de Datos y Persistencia
-El sistema utiliza una Base de Datos Relacional para garantizar la persistencia de la información. 
-* **Persistencia de Datos**: Toda la información de usuarios, productos, pedidos y promociones se almacena de forma estructurada, permitiendo la recuperación de datos tras el reinicio de la aplicación.
-* **Integridad y Seguridad**: La implementación sigue el diseño lógico definido en el diagrama entidad-relación, asegurando la consistencia de los datos y el manejo seguro de credenciales mediante hashing.
+## 🏗️ Estructura del Repositorio
+El repositorio está dividido en los siguientes módulos principales:
 
-## Características Principales
-* **Catálogo Interactivo**: Búsqueda por nombre y filtrado por precio, género o plataforma.
-* **Gestión de Usuarios**: Autenticación con roles de Cliente y Administrador.
-* **Administración**: Herramientas para agregar, editar y eliminar productos del catálogo.
+* 📁 **`/backend`**: API REST desarrollada en Java con Spring Boot.
+* 📁 **`/frontend`**: Interfaz de usuario desarrollada con Astro y Tailwind CSS.
+* 📁 **`/Documentación`**: Manuales de usuario, programador y documentos de análisis.
+* 📁 **`/Diagramas UML`**: Modelado del sistema (Casos de uso, Secuencia, Clases, DER).
+* 📁 **`/Prototipo`**: Mockups y diseños iniciales de la interfaz de usuario.
 
-## Equipo de Desarrollo
-* **Andres Felipe Rondón Lara**: Analista y Gestor de Proyecto.
-* **Santiago Andrés Benavides Coral**: Desarrollador Backend y Arquitecto de Datos.
-* **Davidson Sanchez Gordillo**: Desarrollador Frontend y Aseguramiento de Calidad (QA).
+## 🚀 Tecnologías Principales
+* **Backend:** Java, Spring Boot, Maven, Spring Security (JWT), PostgreSQL/MySQL.
+* **Frontend:** Astro, TypeScript, Tailwind CSS.
+* **Herramientas:** Docker, Git, Swagger (OpenAPI) para documentación de la API.
 
-## Estructura del Proyecto
-* `/Diagramas UML`: Modelado visual de la arquitectura.
-* `/Documentación`: Informes técnicos y requerimientos.
-* `/Prototipo`: Diseños de interfaz de usuario.
+> 💡 **Nota:** Para instrucciones detalladas de ejecución, dirígete al archivo `README.md` ubicado dentro de las carpetas `/backend` y `/frontend`.
