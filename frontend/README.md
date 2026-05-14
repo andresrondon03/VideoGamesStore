@@ -1,43 +1,23 @@
-# Frontend VideoGamesStore (Astro + Tailwind)
+# TechZone Gaming - Frontend 🌐
 
-Frontend para la tienda de videojuegos con:
-- Astro 6
-- Tailwind CSS 4
-- Content Collections para contenido editorial
-- Integracion con backend Spring Boot (API REST + JWT)
+Este módulo contiene la interfaz de usuario web del sistema. Ha sido diseñada con un enfoque modular y responsivo, permitiendo a los clientes explorar el catálogo y a los administradores gestionar el inventario a través del Panel de Control.
 
-## Configuracion
+## 🛠️ Tecnologías
+* **Astro**: Framework web para una renderización ultra rápida.
+* **TypeScript**: Para el tipado estricto y seguridad en el código (`/lib/types.ts`).
+* **Tailwind CSS**: Para el diseño ágil, responsivo y moderno.
 
-1. Instala dependencias:
-   - `npm install`
-2. Crea `.env` a partir de `.env.example`:
-   - `PUBLIC_API_BASE_URL=http://localhost:8080`
-3. Ejecuta en desarrollo:
-   - `npm run dev`
+## 🗂️ Estructura del Proyecto
+* `src/components/`: Componentes UI reutilizables (`GameCard`, `Navbar`, `HeroSection`).
+* `src/layouts/`: Estructuras maestras (Metadatos, SEO, Footer global).
+* `src/pages/`: Rutas de la aplicación web (`index`, `catalogo`, `checkout`, `admin`, etc.).
+* `src/lib/`: Comunicación con la API REST (`api.ts`), manejo del carrito y tokens JWT en el LocalStorage.
+* `src/styles/`: Estilos globales y directivas de Tailwind.
 
-## Rutas principales
+## 🚀 Instalación y Ejecución
 
-- `/` landing page
-- `/catalogo` busqueda y filtros conectados a `/api/videojuegos`
-- `/registro` y `/login` para autenticacion
-- `/checkout` para enviar carrito a `/api/pedidos/checkout`
-- `/historial` para consultar pedidos del usuario
-- `/admin` para resumen de inventario y pedidos admin
-
-## Integracion backend
-
-Endpoints consumidos:
-- `GET /api/videojuegos`
-- `POST /api/auth/registro`
-- `POST /api/auth/login`
-- `POST /api/pedidos/checkout`
-- `GET /api/pedidos/historial`
-- `GET /api/pedidos/admin/todos`
-
-JWT:
-- El token devuelto por login se guarda en `localStorage`.
-- Se envia como `Authorization: Bearer <token>` para endpoints protegidos.
-
-## Nota CORS para Spring Boot
-
-El backend ya tiene `http.cors()` en seguridad. Si el navegador bloquea peticiones desde Astro (`http://localhost:4321`), agrega una configuracion de origen permitido para ese host en backend.
+1. **Instalar dependencias:**
+   Puedes utilizar `npm`, `yarn`, `pnpm` o `bun`.
+   ```bash
+   npm install
+   npm run dev
