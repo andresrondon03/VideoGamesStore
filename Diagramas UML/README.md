@@ -1,9 +1,11 @@
-# Diagramas UML
+# Diagramas UML y Modelado 📊
 
-Esta carpeta contiene el modelado visual del sistema **VideoGamesStore**, definiendo su estructura estática y comportamiento dinámico.
+Esta sección contiene las representaciones gráficas de la arquitectura lógica, el flujo de datos y el comportamiento del sistema TechZone Gaming.
 
-## Contenido de la Carpeta
-* **Diagrama de Contexto**: Define las fronteras del sistema y actores externos.
-* **Diagrama de Clases**: Detalla la jerarquía de objetos, incluyendo `Usuario`, `Videojuego` y patrones de diseño para promociones.
-* **Diagramas de Casos de Uso**: Flujos para registro, compra, filtrado y gestión de juegos.
-* **Diagramas de Secuencia**: Representan la lógica paso a paso de procesos como el checkout y la autenticación.
+## 📂 Contenido
+
+* **`/Diagrama Casos de uso`**: Interacciones entre los actores (Usuario/Admin) y el sistema (Compras, Filtrado, Gestión, Auth).
+* **`/Diagrama de Clases`**: Estructura estática del backend, mostrando entidades (Usuario, Videojuego, Pedido), sus atributos, métodos y multiplicidades.
+* **`/Diagrama Entidad-Relación`**: Modelado de la base de datos física, incluyendo tablas pivote (`vj_cat`, `vj_plat`) e integridad referencial.
+* **`/Diagrama de Contexto`**: Visión global del flujo de información entre navegadores, el sistema web y la base de datos.
+* **`/Diagramas de Secuencia`**: Representación temporal del paso a paso técnico en procesos clave como el Checkout, Filtrado de Productos y Gestión de Juegos.
