@@ -1,0 +1,75 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "TechZone Gaming | VideoGamesStore",
+  description = "Compra videojuegos, explora catalogo y gestiona pedidos en TechZone Gaming.",
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).toString();
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+
+    <title>{title}</title>
+  </head>
+  <body class="min-h-screen bg-slate-100 text-slate-900 antialiased">
+    <slot />
+    <footer class="mt-16 bg-slate-950 text-slate-300">
+      <div class="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 md:grid-cols-4">
+        <div>
+          <p class="mb-3 text-lg font-bold text-white">TechZone Gaming</p>
+          <p class="text-sm text-slate-400">Tu tienda de confianza para videojuegos, consolas y periféricos.</p>
+        </div>
+        <div>
+          <p class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-200">Categorias</p>
+          <ul class="space-y-2 text-sm text-slate-400">
+            <li>Videojuegos</li>
+            <li>Consolas</li>
+            <li>PC Gaming</li>
+            <li>Perifericos</li>
+          </ul>
+        </div>
+        <div>
+          <p class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-200">Ayuda</p>
+          <ul class="space-y-2 text-sm text-slate-400">
+            <li>Envios</li>
+            <li>Devoluciones</li>
+            <li>Garantias</li>
+            <li>Contacto</li>
+          </ul>
+        </div>
+        <div>
+          <p class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-200">Contacto</p>
+          <ul class="space-y-2 text-sm text-slate-400">
+            <li>Email: info@techzone.com</li>
+            <li>Tel: +1 (555) 123-4567</li>
+            <li>Lun - Vie: 9:00 - 18:00</li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-slate-800 px-4 py-5 text-center text-xs text-slate-500">
+        &copy; 2026 TechZone Gaming - Tu tienda tech favorita
+      </div>
+    </footer>
+  </body>
+</html>

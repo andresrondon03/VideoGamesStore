@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    container_name: videogames_db
+    environment:
+      POSTGRES_USER: santiago_dev
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: videogames_store
+    ports:
+      - "5433:5432"
